@@ -1,15 +1,12 @@
 ---
-title: "MODELING SUD TREATMENT READMISSION WITH A RECURRENT TIME-TO-EVENT APPROACH"
-author: "José A. Ruiz-Tagle, MSc"
-date: '2022-03-25'
+title: "Riesgo de readmisión a tratamiento por consumo de sustancias en Chile"
+author: "José A. Ruiz-Tagle M."
+fontsize: 6pt
 output: beamer_presentation
 theme: "CambridgeUS"
 colortheme: "dolphin"
 fonttheme: "structurebold"
 ---
-```{r, eval=FALSE, results='hide'}
-#token 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
-```
 
 ```{r librerias, include=FALSE}
 ifelse(!require("survival"), install.packages("survival"),library("survival"))
@@ -27,12 +24,11 @@ load("modelos.RData")
 ```
 ## Antecedentes
 
-* El consumo indebido de sustancias se relaciona con múltiples problemas de salud:
-  + Enfermedades cardiacas
-  + Síntomas de psicosis
-  + Conductas sexuales de riesgo
+* El consumo indebido de sustancias se relaciona con múltiples problemas de salud(Rehm et al., 2009):
+  + Enfermedades cardiacas(Degenhardt et al., 2013)
+  + Ansiedad y síntomas de psicosis(Castillo-Carniglia et al., 2019)
+  + Conductas sexuales de riesgo(Chawla y Sarkar,2019)
   
-
 * Los programas de rehabilitación son el principal mecanismo para abordar este problema
   + Más del 60% del presupuesto de SENDA está destinado al tratamiento
   
@@ -41,8 +37,9 @@ load("modelos.RData")
   + Reducir mortalidad asociada al consumo
   + Reducir comorbilidades psiquiátricas
   + Mejorar calidad de vida
-  
-* En 2018, solo el 23% alcanzó el alta terapéutica
+* La tasa de abandonos es alta
+* La remisión es difícil de alcanzar 
+  + En Chile durante 2018, solo el 23% alcanzó el alta terapéutica
 
 ## Readmisión
 
@@ -50,6 +47,7 @@ load("modelos.RData")
 * Sobreuso del sistema sanitario
   + Listas de espera
 * Mantención del logro terapéutico al largo plazo
+* Readmisión $\neq$ Recaída
 * Es un evento recurrente
 
 ## Eventos recurrentes
@@ -67,14 +65,15 @@ load("modelos.RData")
 
 * Los modelos clásicos de supervivencia se centran en el primer evento (COXPH)
 * Los errores estándar pueden estar mal estimados si no consideramos la correlación
-* Modelos de varianza corregida
+* Modelos de varianza corregida (Yadav et al., 2018)
   + Andersen Gil (AG)
   + **Prentice, Williams y Petersen (PWP)**
   + Frailty
-  + WLW
+  + Wei, Lin y Weissfeld (WLW)
 
 ## Materiales y método
 * SISTRAT 
+  + 10 años de seguimiento
 * Random forest imputation (~8% de perdidos)
 * Modelos PWP
   + Total Time (TT)
@@ -82,12 +81,13 @@ load("modelos.RData")
 * Interacción con estrato (N° de admisión)
   + <= 3 Admisiones
 * Bootstrap paramétrico para obtener IC de la combinación no lineal con transformación ($\exp$)
+* n = 107.665
 
 ## Resultados
 
-
 ```{r, message = FALSE, results = 'asis',include=FALSE}
 stargazer(pwp_tt_int_miss, pwp_tt_int_rf, pwp_gt_int_miss, pwp_gt_int_rf,
+          type = "html",
           title = "Estimated PWP-TT and PWP-GT models",
           column.labels = c("PWP-TT Raw", "PWP-TT imp","PWP-GT Raw","PWP-GT imp"),
           dep.var.caption = " ",
@@ -220,7 +220,7 @@ tab_int_ci <- tab_int_ci[,c(1,2,5,3,6,4,7)]
 
 ```
 
-```{r grafico, echo=FALSE, warning=FALSE, out.height="85%"}
+```{r grafico, echo=FALSE, warning=FALSE, out.height="85%", fig.align='center'}
 boxLabels=c("PWP-TT Miss","PWP-TT RF","PWP-GT Miss","PWP-GT RF")
 df<-data.frame(Model = rep(boxLabels,3),
                Strata = rep(c("Admission 1","Admission 2","Admission 3"),c(4,4,4)),
@@ -262,32 +262,24 @@ ggplot(df, aes(x = as.factor(Model), y = hr,color = Model)) +
   facet_wrap(~Strata)
 ```
 
-##
+## Discusión
+
+* Los programas de rehabilitación disminuyen el riesgo de readmisión si se completan satisfactoriamente
+* Hay que tener especial precaución con los consumidores de Pasta Base y Cocaína
+* No se observa una diferencia significativa en el efecto del tratamiento para las admisiones posteriores
+* Es importante desarrollar estrategias para disminuir el abandono y/o aumentar el alta terapéutica
+* Trabajos posteriores deben enfocarse en identificar elementos que aumenten el tiempo entre el alta y la recaída, a la vez que disminuyan el tiempo entre la recaída y la readmisión
+
+
+## Bibliografía
+
+* Castillo-Carniglia, A., Keyes, K. M., Hasin, D. S., & Cerdá, M. (2019). Psychiatric comorbidities in alcohol use disorder. The Lancet Psychiatry, 6(12), 1068–1080
+* Chawla, N., & Sarkar, S. (2019). Defining “High-risk Sexual Behavior” in the Context of Substance Use. Journal of Psychosexual Health, 1(1), 26–31
+* Degenhardt, L., Whiteford, H. A., Ferrari, A. J., Baxter, A. J., Charlson, F. J., Hall, W. D., Freedman, G., Burstein, R., Johns, N., Engell, R. E., Flaxman, A., Murray, C. J. L., & Vos, T. (2013). Global burden of disease attributable to illicit drug use and dependence: Findings from the Global Burden of Disease Study 2010. The Lancet, 382(9904), 1564–1574
+* Pasareanu, A. R., Opsal, A., Vederhus, J. K., Kristensen, Ø., & Clausen, T. (2015). Quality of life improved following in-patient substance use disorder treatment. Health and Quality of Life Outcomes, 13(1), 1–8
+* Prentice, R. L., Williams, B. J., & Peterson, A. V. (1981). On the regression analysis of multivariate failure time data. Biometrika, 68(2), 373–379
+* Yadav, C. P., V, S., MA, K., & RM, P. (2018). An Overview of Statistical Models for Recurrent Events Analysis: A Review. Epidemiology: Open Access, 08(04)
 
 
 
 
-```{r descriptives, echo=FALSE}
-descriptivos <- rbind(round(summary(rfimp$edad_al_ing),1),round(summary(rfimp$edad_inicio),1))
-rownames(descriptivos) = c("Edad","Edad de inicio")
-kable(descriptivos,booktabs = T,format = "markdown")
-```
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
