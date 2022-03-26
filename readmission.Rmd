@@ -7,6 +7,9 @@ theme: "CambridgeUS"
 colortheme: "dolphin"
 fonttheme: "structurebold"
 ---
+```{r, eval=FALSE}
+#token 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
+```
 
 ```{r librerias, include=FALSE}
 ifelse(!require("survival"), install.packages("survival"),library("survival"))
