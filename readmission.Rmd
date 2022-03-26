@@ -162,7 +162,108 @@ stargazer(pwp_tt_int_miss, pwp_tt_int_rf, pwp_gt_int_miss, pwp_gt_int_rf,
 \end{tabular} 
 \end{table} 
 
+## Intervalos de confianza
+
+```{r bootstrap, include=FALSE}
+ci.boot <- function(model){
+set.seed(133)
+summary(model)
+A = matrix(c(1,1,1,0,0,1), ncol=3)
+b <- matrix(coef(model)[c(1,20,21)], ncol=1)
+V <- vcov(model)[c(1,20,21),c(1,20,21)]
+B <- MASS::mvrnorm(25000, b, V)
+nlcom <- exp(A %*% b)
+nlsim <- exp(A %*% t(B))
+nlcis <- apply(nlsim, 1, quantile, c(.025,.975))
+nlcis<- unname(nlcis)
+print(nlcis)
+}
+
+ci_tt_raw <- ci.boot(pwp_tt_int_miss)
+ci_tt_imp <- ci.boot(pwp_tt_int_rf)
+ci_gt_raw <- ci.boot(pwp_gt_int_miss)
+ci_gt_imp <- ci.boot(pwp_gt_int_rf)
+
+tab_int_ci <- data.frame(
+  Model = c("PWP-TT raw","PWP-TT imp","PWP-GT raw","PWP-GT imp"),
+  TDxStrata1 = c(round(exp(coef(pwp_tt_int_miss)[1]),2),
+                 round(exp(coef(pwp_tt_int_rf)[1]),2),
+                 round(exp(coef(pwp_gt_int_miss)[1]),2),
+                 round(exp(coef(pwp_gt_int_rf)[1]),2)),
+  TDxStrata2 = c(round(exp(coef(pwp_tt_int_miss)[1]+coef(pwp_tt_int_miss)[20]),2),
+                 round(exp(coef(pwp_tt_int_rf)[1]+coef(pwp_tt_int_rf)[20]),2),
+                 round(exp(coef(pwp_gt_int_miss)[1]+coef(pwp_gt_int_miss)[20]),2),
+                 round(exp(coef(pwp_gt_int_rf)[1]+coef(pwp_gt_int_rf)[20]),2)),
+  TDxStrata3 = c(round(exp(coef(pwp_tt_int_miss)[1]+coef(pwp_tt_int_miss)[21]),2),
+                 round(exp(coef(pwp_tt_int_rf)[1]+coef(pwp_tt_int_rf)[21]),2),
+                 round(exp(coef(pwp_gt_int_miss)[1]+coef(pwp_gt_int_miss)[21]),2),
+                 round(exp(coef(pwp_gt_int_rf)[1]+coef(pwp_gt_int_rf)[21]),2))
+)
+
+CIS1 <- c(paste(round(exp(confint(pwp_tt_int_miss)[1]),2),round(exp(confint(pwp_tt_int_miss)[1,2]),2),sep="-"),
+          paste(round(exp(confint(pwp_tt_int_rf)[1]),2),round(exp(confint(pwp_tt_int_rf)[1,2]),2),sep="-"),
+          paste(round(exp(confint(pwp_gt_int_miss)[1]),2),round(exp(confint(pwp_gt_int_miss)[1,2]),2),sep="-"),
+          paste(round(exp(confint(pwp_gt_int_rf)[1]),2),round(exp(confint(pwp_gt_int_rf)[1,2]),2),sep="-"))
+CIS2 <- c(paste(round(ci_tt_raw[1],2),round(ci_tt_raw[2,1],2),sep="-"),
+          paste(round(ci_tt_imp[1],2),round(ci_tt_imp[2,1],2),sep="-"),
+          paste(round(ci_gt_raw[1],2),round(ci_gt_raw[2,1],2),sep="-"),
+          paste(round(ci_gt_imp[1],2),round(ci_gt_imp[2,1],2),sep="-"))
+CIS3 <- c(paste(round(ci_tt_raw[1,2],2),round(ci_tt_raw[2,2],2),sep="-"),
+          paste(round(ci_tt_imp[1,2],2),round(ci_tt_imp[2,2],2),sep="-"),
+          paste(round(ci_gt_raw[1,2],2),round(ci_gt_raw[2,2],2),sep="-"),
+          paste(round(ci_gt_imp[1,2],2),round(ci_gt_imp[2,2],2),sep="-"))
+tab_int_ci$CIS1 <- CIS1
+tab_int_ci$CIS2 <- CIS2
+tab_int_ci$CIS3 <- CIS3
+tab_int_ci <- tab_int_ci[,c(1,2,5,3,6,4,7)]
+
+
+```
+
+```{r grafico, echo=FALSE, warning=FALSE, out.height="85%"}
+boxLabels=c("PWP-TT Miss","PWP-TT RF","PWP-GT Miss","PWP-GT RF")
+df<-data.frame(Model = rep(boxLabels,3),
+               Strata = rep(c("Admission 1","Admission 2","Admission 3"),c(4,4,4)),
+               hr=c(tab_int_ci[,2],tab_int_ci[,4],tab_int_ci[,6]),
+               low = c(
+               round(exp(confint(pwp_tt_int_miss)[1]),2),
+               round(exp(confint(pwp_tt_int_rf)[1]),2),
+               round(exp(confint(pwp_gt_int_miss)[1]),2),
+               round(exp(confint(pwp_gt_int_rf)[1]),2),
+               round(ci_tt_raw[1],2),
+               round(ci_tt_imp[1],2),
+               round(ci_gt_raw[1],2),
+               round(ci_gt_imp[1],2),
+               round(ci_tt_raw[1,2],2),
+               round(ci_tt_imp[1,2],2),
+               round(ci_gt_raw[1,2],2),
+               round(ci_gt_imp[1,2],2)),
+               up = c(
+                    round(exp(confint(pwp_tt_int_miss)[1,2]),2),
+                    round(exp(confint(pwp_tt_int_rf)[1,2]),2),
+                    round(exp(confint(pwp_gt_int_miss)[1,2]),2),
+                    round(exp(confint(pwp_gt_int_rf)[1,2]),2),
+                    round(ci_tt_raw[2,1],2),
+                    round(ci_tt_imp[2,1],2),
+                    round(ci_gt_raw[2,1],2),
+                    round(ci_gt_imp[2,1],2),
+                    round(ci_tt_raw[2,2],2),
+                    round(ci_tt_imp[2,2],2),
+                    round(ci_gt_raw[2,2],2),
+                    round(ci_gt_imp[2,2],2)))
+
+ggplot(df, aes(x = as.factor(Model), y = hr,color = Model)) +
+  geom_point(position = "dodge") +
+  geom_errorbar(aes(ymin = low, ymax = up), position = "dodge") + 
+  ylab("Hazard Ratio") +
+  xlab("") +
+  geom_hline(aes(yintercept = 1), size = .25, linetype = "dashed") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+  facet_wrap(~Strata)
+```
+
 ##
+
 
 
 
