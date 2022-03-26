@@ -7,7 +7,7 @@ theme: "CambridgeUS"
 colortheme: "dolphin"
 fonttheme: "structurebold"
 ---
-```{r, eval=FALSE}
+```{r, eval=FALSE, results='hide'}
 #token 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
 ```
 
@@ -40,15 +40,40 @@ load("modelos.RData")
 * Se relaciona con diversos beneficios
   + Reducir mortalidad asociada al consumo
   + Reducir comorbilidades psiquiátricas
-  + 
+  + Mejorar calidad de vida
+  
+* En 2018, solo el 23% alcanzó el alta terapéutica
 
 ## Readmisión
+
+* Condición de recaídas crónicas
 * Sobreuso del sistema sanitario
   + Listas de espera
 * Mantención del logro terapéutico al largo plazo
+* Es un evento recurrente
 
+## Eventos recurrentes
 
+* Eventos reversibles/irreversibles
+* Reversibles -> Multiples (hospitalización) o Recurrentes (readmisión)
+* Dos características principales:
+  + Correlación intra-individuo
+  + Covariables time-variant
+* ¿De dónde viene la correlación?
+  + Dependencia
+  + Heterogeneidad
+  
+## ¿Por qué necesitamos teorizar sobre esto?
 
+* Los modelos clásicos de supervivencia se centran en el primer evento (COXPH)
+* Los errores estándar pueden estar mal estimados si no consideramos la correlación
+* Modelos de varianza corregida
+  + Andersen Gil (AG)
+  + **Prentice, Williams y Petersen (PWP)**
+  + Frailty
+  + WLW
+
+## 
 
 
 ```{r descriptives, echo=FALSE}
