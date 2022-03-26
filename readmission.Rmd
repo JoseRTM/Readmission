@@ -73,7 +73,14 @@ load("modelos.RData")
   + Frailty
   + WLW
 
-## 
+## Materiales y método
+* SISTRAT 
+* Modelos PWP
+  + Total Time (TT)
+  + Gap Time (GT)
+* Interacción con estrato (N° de admisión)
+  + <= 3 Admisiones
+* Bootstrap paramétrico para obtener IC de la combinación no lineal con transformación ($\exp$)
 
 
 ```{r descriptives, echo=FALSE}
