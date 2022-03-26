@@ -1,0 +1,74 @@
+---
+title: "MODELING SUD TREATMENT READMISSION WITH A RECURRENT TIME-TO-EVENT APPROACH"
+author: "José A. Ruiz-Tagle, MSc"
+date: '2022-03-25'
+output: beamer_presentation
+theme: "CambridgeUS"
+colortheme: "dolphin"
+fonttheme: "structurebold"
+---
+
+```{r librerias, include=FALSE}
+ifelse(!require("survival"), install.packages("survival"),library("survival"))
+ifelse(!require("stargazer"), install.packages("stargazer"),library("stargazer"))
+ifelse(!require("kableExtra"), install.packages("kableExtra"),library("kableExtra"))
+ifelse(!require("ggplot2"), install.packages("ggplot2"),library("ggplot2"))
+ifelse(!require("dplyr"), install.packages("dplyr"),library("dplyr"))
+ifelse(!require("haven"), install.packages("haven"),library("haven"))
+ifelse(!require("usethis"), install.packages("usethis"),library("usethis"))
+
+```
+
+```{r modelos, include=FALSE}
+load("modelos.RData")
+```
+## Antecedentes
+
+* El consumo indebido de sustancias se relaciona con múltiples problemas de salud:
+  + Enfermedades cardiacas
+  + Síntomas de psicosis
+  + Conductas sexuales de riesgo
+  
+
+* Los programas de rehabilitación son el principal mecanismo para abordar este problema
+  + Más del 60% del presupuesto de SENDA está destinado al tratamiento
+  
+## ¿Qué se sabe de los programas de rehabilitación?
+* Se relaciona con diversos beneficios
+  + Reducir mortalidad asociada al consumo
+  + Reducir comorbilidades psiquiátricas
+  + 
+
+## Readmisión
+* Sobreuso del sistema sanitario
+  + Listas de espera
+* Mantención del logro terapéutico al largo plazo
+
+
+
+
+
+```{r descriptives, echo=FALSE}
+descriptivos <- rbind(round(summary(rfimp$edad_al_ing),1),round(summary(rfimp$edad_inicio),1))
+rownames(descriptivos) = c("Edad","Edad de inicio")
+kable(descriptivos,booktabs = T,format = "markdown")
+```
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
